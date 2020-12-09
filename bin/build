@@ -52,11 +52,17 @@ async function main() {
         .rollup({
           input: path.resolve(__dirname, '../src/app/index.js'),
           plugins: [
+            require('@rollup/plugin-node-resolve'),
             require('@rollup/plugin-babel').babel({
               babelHelpers: 'bundled',
               presets: ['@babel/preset-env'],
+              plugins: [
+                ['@babel/plugin-transform-react-jsx', { pragma: 'el' }],
+              ],
             }),
-            require('@rollup/plugin-node-resolve'),
+            require('@rollup/plugin-inject')({
+              el: path.resolve('src/app/utils/el.js'),
+            }),
             require('rollup-plugin-terser').terser({
               output: {
                 comments: false,
