@@ -5,6 +5,7 @@ const rollup = require('rollup')
 const abrusco = require('abrusco-cli')
 const PurgeCSS = require('purgecss').PurgeCSS
 
+const inputConfig = require('../rollup.production')
 const inputFile = path.resolve(__dirname, '../develop/index.html')
 const outputFile = path.resolve(__dirname, '../public/index.html')
 
@@ -49,27 +50,7 @@ async function main() {
     .then((html) =>
       // process JS
       rollup
-        .rollup({
-          input: path.resolve(__dirname, '../src/app/index.js'),
-          plugins: [
-            require('@rollup/plugin-node-resolve'),
-            require('@rollup/plugin-babel').babel({
-              babelHelpers: 'bundled',
-              presets: ['@babel/preset-env'],
-              plugins: [
-                ['@babel/plugin-transform-react-jsx', { pragma: 'el' }],
-              ],
-            }),
-            require('@rollup/plugin-inject')({
-              el: path.resolve('src/app/utils/el.js'),
-            }),
-            require('rollup-plugin-terser').terser({
-              output: {
-                comments: false,
-              },
-            }),
-          ],
-        })
+        .rollup(inputConfig)
         .then((x) => x.generate({ format: 'iife' }))
         .then((x) => x.output[0].code)
         .then((x) =>
